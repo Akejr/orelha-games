@@ -1,0 +1,30 @@
+{
+  "name": "orelha-games",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Orelha Games - portal de minijogos multiplayer casuais. Jogos simples. Caos com amigos. Diversao imediata.",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "concurrently -n server,client -c magenta,cyan \"npm:dev:server\" \"npm:dev:client\"",
+    "dev:server": "npm run dev --workspace server",
+    "dev:client": "npm run dev --workspace client",
+    "build": "npm run build --workspace client",
+    "typecheck": "npm run typecheck --workspace client && npm run typecheck --workspace server",
+    "start": "npm run start --workspace server",
+    "preview": "npm run preview --workspace client",
+    "test:balance": "tsx scripts/balance.ts",
+    "test:render": "npm run render-check --workspace client",
+    "test:smoke": "tsx scripts/smoke.ts"
+  },
+  "devDependencies": {
+    "concurrently": "9.0.1",
+    "typescript": "5.5.4"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

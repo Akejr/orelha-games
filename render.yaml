@@ -1,0 +1,26 @@
+# Blueprint do Render.
+#
+# Um único serviço Node: ele roda a simulação (WebSocket + loop de 60 Hz + salas
+# em memória) e, como `client/dist` existe depois do build, entrega o portal na
+# mesma origem. Um domínio só, sem CORS e sem variável de ambiente apontando um
+# serviço para o outro.
+#
+# `--include=dev` no build é de propósito: o build precisa de vite e tsc, que são
+# devDependencies, e plataforma que roda o build com NODE_ENV=production pularia
+# essas dependências.
+services:
+  - type: web
+    name: orelha-games
+    runtime: node
+    plan: free
+    # Virginia é a região mais perto do Brasil no Render (menor latência).
+    region: virginia
+    branch: main
+    buildCommand: npm install --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production

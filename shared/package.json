@@ -1,0 +1,11 @@
+{
+  "name": "@orelha/shared",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Simulação, tipos e catálogo compartilhados entre o cliente e o servidor do Orelha Games.",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  }
+}

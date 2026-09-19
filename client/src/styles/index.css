@@ -1,0 +1,170 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --orelha-bg: #f6f1ff;
+    --orelha-ink: #1e1440;
+    --shadow-pop: 0 8px 0 0 rgba(52, 26, 126, 0.18);
+    color-scheme: light;
+  }
+
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-canvasbg font-body text-ink antialiased;
+    background-image: radial-gradient(
+        1200px 600px at 12% -10%,
+        rgba(255, 92, 163, 0.22),
+        transparent 60%
+      ),
+      radial-gradient(900px 520px at 92% 0%, rgba(63, 198, 255, 0.24), transparent 62%),
+      radial-gradient(760px 520px at 50% 110%, rgba(255, 201, 60, 0.22), transparent 60%);
+    background-attachment: fixed;
+    overflow-x: hidden;
+  }
+
+  #root {
+    min-height: 100%;
+    isolation: isolate;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    /* sem @apply aqui: usar a própria utility font-display criaria dependência circular */
+    font-family: 'Baloo 2', 'Trebuchet MS', system-ui, sans-serif;
+    letter-spacing: -0.01em;
+  }
+
+  button {
+    font-family: inherit;
+  }
+
+  /* foco visível e bonito em todo o produto (acessibilidade) */
+  :focus-visible {
+    outline: 3px solid #6c41f5;
+    outline-offset: 3px;
+    border-radius: 12px;
+  }
+
+  ::selection {
+    background: rgba(143, 102, 255, 0.28);
+  }
+
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(108, 65, 245, 0.28);
+    border: 3px solid transparent;
+    border-radius: 999px;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(108, 65, 245, 0.45);
+    background-clip: content-box;
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-[1180px] px-4 sm:px-6 lg:px-8;
+  }
+
+  .surface {
+    @apply rounded-3xl border border-white/70 bg-white/80 shadow-card backdrop-blur-xl;
+  }
+
+  .surface-solid {
+    @apply rounded-3xl border border-grape-100 bg-white shadow-card;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold;
+  }
+
+  .label-caps {
+    @apply text-[11px] font-extrabold uppercase tracking-[0.16em] text-ink-mute;
+  }
+
+  .code-pill {
+    @apply font-display text-2xl font-extrabold tracking-[0.32em] text-grape-700;
+  }
+
+  /* fundo pontilhado sutil usado em seções e no lobby */
+  .dotted {
+    background-image: radial-gradient(rgba(108, 65, 245, 0.16) 1.4px, transparent 1.4px);
+    background-size: 22px 22px;
+  }
+
+  .stroke-text {
+    -webkit-text-stroke: 2px rgba(30, 20, 64, 0.9);
+    paint-order: stroke fill;
+  }
+}
+
+@layer utilities {
+  .h-screen-dvh {
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  .min-h-screen-dvh {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .safe-x {
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+
+  .no-touch-scroll {
+    touch-action: none;
+    overscroll-behavior: none;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(105deg, #6c41f5 0%, #ff5ca3 52%, #ffc93c 100%);
+  }
+
+  .shadow-inset-top {
+    box-shadow: inset 0 2px 0 0 rgba(255, 255, 255, 0.6);
+  }
+}
+
+/* respeita quem pediu menos movimento */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.06s !important;
+  }
+}
