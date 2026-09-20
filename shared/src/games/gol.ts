@@ -34,7 +34,18 @@ import { ARENA, ARENA_CENTER, buildResults, item, pointsLabel, stepBodies } from
  */
 
 const TIME_LIMIT = 100;
-const LIVES = 3;
+/**
+ * Vidas do gol por tamanho de sala.
+ *
+ * No duelo existe um único gol para atacar, então cada chute certo conta o dobro
+ * do que conta numa sala cheia: com três vidas o duelo acabava em 20 segundos.
+ * Sala de dois ganha trave mais resistente.
+ */
+function livesFor(count: number): number {
+  return count <= 2 ? 6 : count === 3 ? 4 : 3;
+}
+/** Referência para a barra de vida do gol no renderer. */
+const LIVES = 6;
 const BALL_RADIUS = 24;
 const GOAL_RADIUS = 62;
 /** Bola leve e que corre: com atrito alto ela morria no meio do amontoado. */
@@ -79,7 +90,7 @@ export const golGame: GameModule<GolState> = {
     const fighters = ctx.players.map((seed, i) =>
       createFighter(seed, spawns[i].x, spawns[i].y, 26),
     );
-    for (const fighter of fighters) fighter.lives = LIVES;
+    for (const fighter of fighters) fighter.lives = livesFor(fighters.length);
 
     // gols distribuídos em elipse na borda, cada um alinhado com o spawn do dono
     const rx = ARENA.w / 2 - 26;
@@ -249,7 +260,7 @@ export const golGame: GameModule<GolState> = {
       items.push(
         item(goal.x, goal.y, GOAL_RADIUS, 1, {
           o: goal.slot,
-          v: round2(Math.max(0, (owner?.lives ?? 0) / LIVES)),
+          v: round2(Math.max(0, (owner?.lives ?? 0) / livesFor(state.fighters.length))),
         }),
       );
     }

@@ -76,7 +76,7 @@ const PASS_HEAT = 0.94;
 const LIVES = 2;
 
 const CFG = moveConfig({
-  accel: 4500,
+  accel: 5400,
   maxSpeed: 440,
   friction: 0.858,
   radius: 26,

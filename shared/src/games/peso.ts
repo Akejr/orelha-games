@@ -66,7 +66,7 @@ const MAX_ON_FLOOR = 4;
 const SPAWN_UNTIL = 48;
 
 const CFG = moveConfig({
-  accel: 4400,
+  accel: 5200,
   maxSpeed: 440,
   friction: 0.86,
   radius: 27,

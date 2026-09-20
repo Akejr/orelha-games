@@ -41,7 +41,7 @@ export const ARENA_CENTER = {
 
 /** Configuração de movimento padrão: mesma sensação em todos os jogos. */
 export const STD_MOVE: MoveConfig = moveConfig({
-  accel: 4400,
+  accel: 5300,
   maxSpeed: 435,
   friction: 0.86,
   radius: 26,

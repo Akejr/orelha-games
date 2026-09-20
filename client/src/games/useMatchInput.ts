@@ -23,7 +23,15 @@ const KEYS_UP = ['ArrowUp', 'KeyW'];
 const KEYS_DOWN = ['ArrowDown', 'KeyS'];
 const KEYS_DASH = ['Space', 'ShiftLeft', 'ShiftRight', 'KeyJ', 'KeyK', 'Enter'];
 
-const JOY_RADIUS = 58;
+/**
+ * Arrasto que já vale velocidade máxima.
+ *
+ * Era 58 px, o que é mais do que a maioria das pessoas arrasta o polegar: dava a
+ * impressão de personagem lento quando na verdade o input estava pela metade.
+ */
+const JOY_RADIUS = 44;
+/** Arrasto mínimo para sair do lugar (só filtra tremida de dedo). */
+const JOY_DEADZONE = 3;
 
 /**
  * Entrada unificada: teclado no desktop, direcional virtual no toque.
@@ -184,10 +192,11 @@ export function useMatchInput(options: {
     const dx = x - joystick.baseX;
     const dy = y - joystick.baseY;
     const distance = Math.hypot(dx, dy);
-    const clamped = Math.min(1, distance / JOY_RADIUS);
-    if (distance > 6) {
-      inputRef.current.mx = (dx / distance) * clamped;
-      inputRef.current.my = (dy / distance) * clamped;
+    if (distance > JOY_DEADZONE) {
+      // curva de resposta: o começo do arrasto já entrega força de sobra
+      const power = Math.pow(Math.min(1, distance / JOY_RADIUS), 0.7);
+      inputRef.current.mx = (dx / distance) * power;
+      inputRef.current.my = (dy / distance) * power;
     } else {
       inputRef.current.mx = 0;
       inputRef.current.my = 0;

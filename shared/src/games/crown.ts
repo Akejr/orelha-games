@@ -77,7 +77,7 @@ const WEIGHT_PER_SECOND = 0.016;
 const WEIGHT_MAX = 0.13;
 
 const CFG = moveConfig({
-  accel: 4400,
+  accel: 5300,
   maxSpeed: 435,
   friction: 0.858,
   radius: 26,

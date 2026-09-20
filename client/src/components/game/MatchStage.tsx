@@ -646,6 +646,8 @@ export function MatchStage({
 
   const selfMissing = Boolean(selfId && hud.players.length > 0 && !hud.players.some((p) => p.isSelf));
   const countdownValue = Math.ceil(hud.countdown);
+  /** Instruções de controle só nos primeiros segundos; depois o rodapé é do placar. */
+  const showHint = hud.phase === 'countdown' || hud.elapsed < 5;
 
   return (
     <div
@@ -667,21 +669,34 @@ export function MatchStage({
         onDash={input.triggerDash}
         dashReady={dashReady}
         visible={touch}
+        showHint={showHint}
       />
 
-      {!touch ? (
-        <div className="pointer-events-none absolute bottom-3 left-1/2 hidden -translate-x-1/2 items-center gap-3 rounded-2xl bg-black/45 px-4 py-2 text-[12px] font-bold text-white/85 lg:flex">
-          <span className="flex items-center gap-1.5">
-            <kbd className="rounded-md bg-white/85 px-1.5 py-0.5 font-display text-[11px] text-ink">WASD</kbd>
-            mover
-          </span>
-          <span className="h-4 w-px bg-white/25" />
-          <span className="flex items-center gap-1.5">
-            <kbd className="rounded-md bg-white/85 px-2 py-0.5 font-display text-[11px] text-ink">espaço</kbd>
-            dash
-          </span>
-        </div>
-      ) : null}
+      {/*
+        Dica de teclado: aparece na contagem e nos primeiros segundos, acima da
+        faixa de jogadores. Antes ela era fixa em `bottom-3`, exatamente onde fica
+        o placar — em partida de 4 ou 5 pessoas, tampava a pontuação inteira.
+      */}
+      <AnimatePresence>
+        {!touch && showHint ? (
+          <motion.div
+            className="pointer-events-none absolute bottom-[108px] left-1/2 hidden -translate-x-1/2 items-center gap-3 rounded-2xl bg-black/55 px-4 py-2 text-[12px] font-bold text-white/85 lg:flex"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+          >
+            <span className="flex items-center gap-1.5">
+              <kbd className="rounded-md bg-white/85 px-1.5 py-0.5 font-display text-[11px] text-ink">WASD</kbd>
+              mover
+            </span>
+            <span className="h-4 w-px bg-white/25" />
+            <span className="flex items-center gap-1.5">
+              <kbd className="rounded-md bg-white/85 px-2 py-0.5 font-display text-[11px] text-ink">espaço</kbd>
+              dash
+            </span>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
 
       {/* contagem regressiva */}
       <AnimatePresence>

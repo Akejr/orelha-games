@@ -130,7 +130,7 @@ const MOD_POOL: PushModifier[][] = [
 function baseConfig(state: PushState) {
   const icy = state.mods.includes('ice');
   return moveConfig({
-    accel: icy ? 2900 : 4500,
+    accel: icy ? 3300 : 5400,
     maxSpeed: icy ? 470 : 440,
     friction: icy ? 0.962 : 0.858,
     radius: 27,

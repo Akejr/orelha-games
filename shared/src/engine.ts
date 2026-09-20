@@ -35,6 +35,16 @@ export interface MoveConfig {
   knockback: number;
   /** elasticidade entre personagens */
   bounce: number;
+  /**
+   * Assistência de curva: quanto a aceleração cresce quando o input aponta
+   * contra a velocidade atual.
+   *
+   * Sem isso, inverter a direção primeiro cancela a velocidade antiga e só
+   * depois anda para o outro lado — e o jogador sente isso como "o boneco não
+   * obedece". É o ajuste que mais muda a sensação de controle, e não altera a
+   * velocidade máxima (ou seja, não altera a duração das partidas).
+   */
+  turnAssist: number;
 }
 
 /**
@@ -44,8 +54,8 @@ export interface MoveConfig {
  * vez de acabar em 3 segundos.
  */
 export const DEFAULT_MOVE: MoveConfig = {
-  // resposta: chega na velocidade máxima em ~0,1s (controle imediato)
-  accel: 4300,
+  // resposta: chega na velocidade máxima em ~0,08s (controle imediato)
+  accel: 5200,
   // 430 u/s cruza a arena (584 u) em 1,35s
   maxSpeed: 430,
   // atrito curto para o personagem parar onde você soltou
@@ -64,7 +74,30 @@ export const DEFAULT_MOVE: MoveConfig = {
    */
   knockback: 700,
   bounce: 0.54,
+  // inverter a direção acelera até ~2,6x mais rápido que seguir em frente
+  turnAssist: 1.25,
 };
+
+/**
+ * Multiplicador de aceleração pelo alinhamento entre input e velocidade.
+ *
+ * Vive aqui, e não dentro de `stepFighter`, porque a predição do cliente precisa
+ * usar exatamente a mesma conta — senão o personagem divergiria do servidor
+ * justamente no momento mais visível, que é a virada de direção.
+ */
+export function turnResponse(
+  vx: number,
+  vy: number,
+  dx: number,
+  dy: number,
+  assist: number,
+): number {
+  const speed = len(vx, vy);
+  const dirLen = len(dx, dy);
+  if (speed < 50 || dirLen < 0.08 || assist <= 0) return 1;
+  const alignment = (vx * dx + vy * dy) / (speed * dirLen);
+  return alignment < 0.3 ? 1 + (0.3 - alignment) * assist : 1;
+}
 
 export const COUNTDOWN_TIME = 3.35;
 
@@ -305,8 +338,9 @@ export function stepFighter(
     f.vy *= drag;
   } else {
     if (!stunned && hasDir) {
-      f.vx += dir.x * cfg.accel * dt;
-      f.vy += dir.y * cfg.accel * dt;
+      const response = turnResponse(f.vx, f.vy, dir.x, dir.y, cfg.turnAssist);
+      f.vx += dir.x * cfg.accel * response * dt;
+      f.vy += dir.y * cfg.accel * response * dt;
       f.facing = dir.x !== 0 ? Math.sign(dir.x) : f.facing;
       f.dashDirX = dir.x;
       f.dashDirY = dir.y;

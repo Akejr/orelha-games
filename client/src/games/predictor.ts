@@ -1,4 +1,4 @@
-import { DEFAULT_MOVE, clampVector, len } from '@shared/index';
+import { DEFAULT_MOVE, clampVector, len, turnResponse } from '@shared/index';
 import type { FighterView } from '@/multiplayer/snapshotBuffer';
 
 /**
@@ -44,8 +44,11 @@ export class LocalPredictor {
     const cfg = DEFAULT_MOVE;
     const dir = clampVector(input.mx, input.my);
     if (len(dir.x, dir.y) > 0.08) {
-      this.vx += dir.x * cfg.accel * dt;
-      this.vy += dir.y * cfg.accel * dt;
+      // mesma assistência de curva do servidor: prever diferente daria borracha
+      // exatamente na virada de direção, que é o movimento mais visível de todos
+      const response = turnResponse(this.vx, this.vy, dir.x, dir.y, cfg.turnAssist);
+      this.vx += dir.x * cfg.accel * response * dt;
+      this.vy += dir.y * cfg.accel * response * dt;
     }
     const friction = Math.pow(cfg.friction, dt * 60);
     this.vx *= friction;

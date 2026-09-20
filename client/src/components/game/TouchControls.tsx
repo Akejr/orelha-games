@@ -14,18 +14,22 @@ import { cn } from '@/utils/cn';
  * (60–120 por segundo, a partida inteira) remontava HUD e controles — era o que
  * fazia o jogo travar no celular e não travar no teclado.
  */
-const JOY_LIMIT = 58;
+/** Precisa casar com o JOY_RADIUS do useMatchInput. */
+const JOY_LIMIT = 44;
 
 export function TouchControls({
   joystickRef,
   onDash,
   dashReady,
   visible,
+  showHint,
 }: {
   joystickRef: React.MutableRefObject<JoystickVisual>;
   onDash: () => void;
   dashReady: boolean;
   visible: boolean;
+  /** a dica some depois dos primeiros segundos: o rodapé é do placar */
+  showHint: boolean;
 }): JSX.Element | null {
   const ringRef = useRef<HTMLDivElement>(null);
   const knobRef = useRef<HTMLDivElement>(null);
@@ -61,17 +65,21 @@ export function TouchControls({
         style={{ opacity: 0 }}
         aria-hidden="true"
       >
-        <div className="absolute -left-[58px] -top-[58px] h-[116px] w-[116px] rounded-full border-[3px] border-white/45 bg-white/10" />
+        <div className="absolute -left-[48px] -top-[48px] h-[96px] w-[96px] rounded-full border-[3px] border-white/45 bg-white/10" />
         <div
           ref={knobRef}
           className="absolute -left-[27px] -top-[27px] h-[54px] w-[54px] rounded-full bg-white/80 shadow-card will-change-transform"
         />
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex items-end justify-between p-4 pb-24 safe-bottom">
-        <p className="max-w-[45%] rounded-2xl bg-black/25 px-3 py-2 text-[11px] font-bold leading-tight text-white/85">
-          Arraste em qualquer lugar para mover
-        </p>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex items-end justify-between p-4 pb-28 safe-bottom">
+        {showHint ? (
+          <p className="max-w-[45%] rounded-2xl bg-black/45 px-3 py-2 text-[11px] font-bold leading-tight text-white/85 transition-opacity">
+            Arraste em qualquer lugar para mover
+          </p>
+        ) : (
+          <span />
+        )}
         <motion.button
           type="button"
           className={cn(

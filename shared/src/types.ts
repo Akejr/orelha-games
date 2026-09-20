@@ -82,8 +82,14 @@ export const WORLD = { w: 1000, h: 700 } as const;
 export const TICK_RATE = 60;
 /** Snapshots por segundo enviados aos clientes. */
 export const SNAPSHOT_RATE = 20;
-/** Frequencia de envio de input do cliente. */
-export const INPUT_RATE = 30;
+/**
+ * Frequencia de envio de input do cliente.
+ *
+ * A 30 Hz o servidor podia estar ate 33 ms atras do seu dedo, o que aparece como
+ * atraso na virada de direcao para os OUTROS jogadores (a predicao local esconde
+ * isso de voce). 40 Hz corta isso quase pela metade e o pacote tem tres numeros.
+ */
+export const INPUT_RATE = 40;
 
 export const MIN_PLAYERS = 2;
 export const MAX_PLAYERS = 5;

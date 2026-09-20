@@ -45,13 +45,13 @@ const TIME_LIMIT = 80;
 /**
  * Escorregão no lado baixo — cresce com o tempo.
  *
- * O número que importa é a aceleração do jogador (4500). Enquanto o escorregão
+ * O número que importa é a aceleração do jogador (5300). Enquanto o escorregão
  * fica abaixo dela, sempre dá para subir a ladeira e ninguém cai: a primeira
  * versão terminava em 80 segundos com zero eliminações. O fim da rampa passa de
  * propósito desse teto — a partir de certa altura o lado baixo é sentença.
  */
-const SLIDE_START = 1150;
-const SLIDE_END = 5400;
+const SLIDE_START = 1300;
+const SLIDE_END = 6300;
 /** Tranco quando a prancha vira de vez. */
 const SLAM_TILT = 0.82;
 const SLAM_IMPULSE = 430;
@@ -88,7 +88,7 @@ const BREAK_AT = 8;
 const BREAK_DURATION = 44;
 
 const CFG = moveConfig({
-  accel: 4500,
+  accel: 5300,
   maxSpeed: 440,
   friction: 0.88,
   radius: 26,

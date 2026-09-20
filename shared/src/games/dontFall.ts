@@ -79,7 +79,7 @@ export interface FallState extends BaseMatchState {
 }
 
 const CFG = moveConfig({
-  accel: 4300,
+  accel: 5200,
   maxSpeed: 420,
   friction: 0.862,
   radius: 25,

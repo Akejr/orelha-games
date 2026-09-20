@@ -60,7 +60,7 @@ export interface PaintState extends BaseMatchState {
 }
 
 const CFG = moveConfig({
-  accel: 4200,
+  accel: 5100,
   maxSpeed: 405,
   friction: 0.866,
   radius: 25,

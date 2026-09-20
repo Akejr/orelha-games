@@ -66,7 +66,7 @@ const WARN_TIME = 1.2;
  * todo mundo se suicidando. Aqui o dash anda ~185 e sobra chão para frear.
  */
 const CFG = moveConfig({
-  accel: 4400,
+  accel: 5200,
   maxSpeed: 430,
   friction: 0.87,
   radius: 26,
