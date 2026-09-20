@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { INPUT_RATE } from '@shared/index';
 
 export interface InputSnapshot {
@@ -37,7 +37,7 @@ export function useMatchInput(options: {
   onDash?: () => void;
 }): {
   inputRef: React.MutableRefObject<InputSnapshot>;
-  joystick: JoystickVisual;
+  joystickRef: React.MutableRefObject<JoystickVisual>;
   handlers: {
     onPointerDown: (event: React.PointerEvent) => void;
     onPointerMove: (event: React.PointerEvent) => void;
@@ -56,7 +56,16 @@ export function useMatchInput(options: {
   const inputRef = useRef<InputSnapshot>({ mx: 0, my: 0, dash: 0 });
   const keys = useRef(new Set<string>());
   const pointerId = useRef<number | null>(null);
-  const [joystick, setJoystick] = useState<JoystickVisual>({
+  /**
+   * O direcional virtual vive em ref, NÃO em estado do React.
+   *
+   * `pointermove` dispara a 60–120 Hz enquanto o dedo está na tela, e no celular
+   * o dedo fica na tela a partida inteira. Com `useState` aqui, cada movimento
+   * remontava o HUD e os controles: era o motivo de a partida travar no celular e
+   * ficar lisa no teclado (que só escreve em ref). Quem desenha o direcional é o
+   * `TouchControls`, lendo esta ref dentro do requestAnimationFrame.
+   */
+  const joystickRef = useRef<JoystickVisual>({
     active: false,
     baseX: 0,
     baseY: 0,
@@ -87,7 +96,7 @@ export function useMatchInput(options: {
         my /= length;
       }
       // o direcional virtual tem prioridade quando está em uso
-      if (!joystick.active) {
+      if (!joystickRef.current.active) {
         inputRef.current.mx = mx;
         inputRef.current.my = my;
       }
@@ -133,7 +142,7 @@ export function useMatchInput(options: {
       window.removeEventListener('blur', onBlur);
       keys.current.clear();
     };
-  }, [enabled, joystick.active, triggerDash]);
+  }, [enabled, triggerDash]);
 
   // ------------------------------------------------------------------ envio
   useEffect(() => {
@@ -154,29 +163,35 @@ export function useMatchInput(options: {
     const y = event.clientY - rect.top;
     pointerId.current = event.pointerId;
     target.setPointerCapture?.(event.pointerId);
-    setJoystick({ active: true, baseX: x, baseY: y, x, y });
+    const joystick = joystickRef.current;
+    joystick.active = true;
+    joystick.baseX = x;
+    joystick.baseY = y;
+    joystick.x = x;
+    joystick.y = y;
   }, []);
 
   const onPointerMove = useCallback((event: React.PointerEvent) => {
     if (pointerId.current !== event.pointerId) return;
+    const joystick = joystickRef.current;
+    if (!joystick.active) return;
     const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
-    setJoystick((previous) => {
-      if (!previous.active) return previous;
-      const dx = x - previous.baseX;
-      const dy = y - previous.baseY;
-      const distance = Math.hypot(dx, dy);
-      const clamped = Math.min(1, distance / JOY_RADIUS);
-      if (distance > 6) {
-        inputRef.current.mx = (dx / distance) * clamped;
-        inputRef.current.my = (dy / distance) * clamped;
-      } else {
-        inputRef.current.mx = 0;
-        inputRef.current.my = 0;
-      }
-      return { ...previous, x, y };
-    });
+    joystick.x = x;
+    joystick.y = y;
+
+    const dx = x - joystick.baseX;
+    const dy = y - joystick.baseY;
+    const distance = Math.hypot(dx, dy);
+    const clamped = Math.min(1, distance / JOY_RADIUS);
+    if (distance > 6) {
+      inputRef.current.mx = (dx / distance) * clamped;
+      inputRef.current.my = (dy / distance) * clamped;
+    } else {
+      inputRef.current.mx = 0;
+      inputRef.current.my = 0;
+    }
   }, []);
 
   const onPointerUp = useCallback((event: React.PointerEvent) => {
@@ -184,12 +199,17 @@ export function useMatchInput(options: {
     pointerId.current = null;
     inputRef.current.mx = 0;
     inputRef.current.my = 0;
-    setJoystick({ active: false, baseX: 0, baseY: 0, x: 0, y: 0 });
+    const joystick = joystickRef.current;
+    joystick.active = false;
+    joystick.baseX = 0;
+    joystick.baseY = 0;
+    joystick.x = 0;
+    joystick.y = 0;
   }, []);
 
   return {
     inputRef,
-    joystick,
+    joystickRef,
     handlers: { onPointerDown, onPointerMove, onPointerUp },
     triggerDash,
   };

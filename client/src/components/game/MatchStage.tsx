@@ -41,6 +41,9 @@ const EMPTY_HUD: HudState = {
   seriesRounds: 0,
 };
 
+/** Intervalo mínimo entre dois desenhos (~60 fps). */
+const MIN_FRAME = 1 / 62;
+
 function isTouchDevice(): boolean {
   if (typeof window === 'undefined') return false;
   return window.matchMedia('(hover: none) and (pointer: coarse)').matches;
@@ -72,6 +75,7 @@ export function MatchStage({
   const zoom = useRef(1);
   const hudClock = useRef(0);
   const tensionClock = useRef(0);
+  const drawClock = useRef(0);
   const lastCountdownBeep = useRef(-1);
   const confettiDone = useRef(false);
 
@@ -452,11 +456,24 @@ export function MatchStage({
   // Loop principal
   // -------------------------------------------------------------------------
 
-  useTicker((t, dt) => {
+  useTicker((t, rawDt) => {
     const canvas = canvasRef.current;
     if (!canvas || size.width === 0) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+
+    /**
+     * Teto de ~60 quadros por segundo.
+     *
+     * O requestAnimationFrame acompanha a tela: celular de 120 Hz pediria 120
+     * desenhos por segundo de uma partida que o servidor só atualiza 20 vezes por
+     * segundo. O tempo acumulado vai para o quadro seguinte, então nada de
+     * animação fica mais lento — só para de desenhar o que ninguém ia ver.
+     */
+    drawClock.current += rawDt;
+    if (drawClock.current < MIN_FRAME) return;
+    const dt = drawClock.current;
+    drawClock.current = 0;
 
     const map = fighterMap.current;
     const snapshot = buffer.sample(map);
@@ -646,14 +663,14 @@ export function MatchStage({
       <MatchHud gameId={gameId} hud={hud} latency={latency} onLeave={onLeave} />
 
       <TouchControls
-        joystick={input.joystick}
+        joystickRef={input.joystickRef}
         onDash={input.triggerDash}
         dashReady={dashReady}
         visible={touch}
       />
 
       {!touch ? (
-        <div className="pointer-events-none absolute bottom-3 left-1/2 hidden -translate-x-1/2 items-center gap-3 rounded-2xl bg-black/30 px-4 py-2 text-[12px] font-bold text-white/85 backdrop-blur-md lg:flex">
+        <div className="pointer-events-none absolute bottom-3 left-1/2 hidden -translate-x-1/2 items-center gap-3 rounded-2xl bg-black/45 px-4 py-2 text-[12px] font-bold text-white/85 lg:flex">
           <span className="flex items-center gap-1.5">
             <kbd className="rounded-md bg-white/85 px-1.5 py-0.5 font-display text-[11px] text-ink">WASD</kbd>
             mover
@@ -670,7 +687,7 @@ export function MatchStage({
       <AnimatePresence>
         {hud.phase === 'countdown' ? (
           <motion.div
-            className="pointer-events-none absolute inset-0 grid place-items-center bg-ink/25 backdrop-blur-[2px]"
+            className="pointer-events-none absolute inset-0 grid place-items-center bg-ink/45"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -696,7 +713,7 @@ export function MatchStage({
 
       {selfMissing ? (
         <div className="pointer-events-none absolute inset-x-0 top-1/2 flex justify-center px-4">
-          <p className="rounded-2xl bg-ink/70 px-4 py-2 text-center font-display text-base font-extrabold text-white backdrop-blur-md">
+          <p className="rounded-2xl bg-ink/80 px-4 py-2 text-center font-display text-base font-extrabold text-white">
             Você entra na próxima rodada 👀
           </p>
         </div>

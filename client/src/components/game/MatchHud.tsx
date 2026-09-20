@@ -162,12 +162,12 @@ export function MatchHud({
           <button
             type="button"
             onClick={onLeave}
-            className="grid h-9 w-9 place-items-center rounded-2xl bg-black/35 text-lg font-extrabold text-white backdrop-blur-md transition hover:bg-black/50"
+            className="grid h-9 w-9 place-items-center rounded-2xl bg-black/55 text-lg font-extrabold text-white transition hover:bg-black/50"
             aria-label="Sair da partida"
           >
             ←
           </button>
-          <div className="rounded-2xl bg-black/35 px-3 py-1.5 backdrop-blur-md">
+          <div className="rounded-2xl bg-black/55 px-3 py-1.5">
             <p className="flex items-center gap-2 font-display text-sm font-extrabold leading-none text-white sm:text-base">
               {meta.name}
               {hud.seriesRounds > 0 ? (
@@ -185,8 +185,8 @@ export function MatchHud({
         {/* cronômetro */}
         <div
           className={cn(
-            'rounded-2xl px-4 py-1.5 text-center backdrop-blur-md',
-            urgent ? 'bg-bubble-500/80' : 'bg-black/35',
+            'rounded-2xl px-4 py-1.5 text-center',
+            urgent ? 'bg-bubble-500/80' : 'bg-black/55',
           )}
         >
           <p
@@ -202,7 +202,7 @@ export function MatchHud({
           </p>
         </div>
 
-        <div className="rounded-2xl bg-black/35 px-3 py-1.5 text-right backdrop-blur-md">
+        <div className="rounded-2xl bg-black/55 px-3 py-1.5 text-right">
           {meta.scoreKind === 'survive' ? (
             <p className="font-display text-sm font-extrabold leading-none text-white">
               {hud.alive} <span className="text-white/60">de {hud.total} vivos</span>
@@ -221,7 +221,7 @@ export function MatchHud({
       {/* faixa de instrução dinâmica (CORES!, ZONA! disputada, final rush…) */}
       {hud.objective || hud.paintRush ? (
         <div className="absolute inset-x-0 top-[72px] flex justify-center px-4 sm:top-[84px]">
-          <p className="animate-ticker-flash rounded-2xl bg-black/45 px-4 py-1.5 font-display text-sm font-extrabold text-white backdrop-blur-md sm:text-base">
+          <p className="animate-ticker-flash rounded-2xl bg-black/62 px-4 py-1.5 font-display text-sm font-extrabold text-white sm:text-base">
             {hud.objective ?? 'FINAL RUSH!'}
           </p>
         </div>
@@ -230,7 +230,7 @@ export function MatchHud({
       {/* barra de tinta empilhada */}
       {gameId === 'paint' ? (
         <div className="absolute inset-x-0 top-[76px] flex justify-center px-4 sm:top-[86px]">
-          <div className="flex h-4 w-full max-w-lg overflow-hidden rounded-full bg-black/30 backdrop-blur-md">
+          <div className="flex h-4 w-full max-w-lg overflow-hidden rounded-full bg-black/30">
             {sorted.map((player) => (
               <div
                 key={player.id}
@@ -250,7 +250,7 @@ export function MatchHud({
       {/* pavio da bomba */}
       {gameId === 'bomb' && hud.bombHolder ? (
         <div className="absolute inset-x-0 top-[76px] flex justify-center px-4 sm:top-[86px]">
-          <div className="w-full max-w-sm rounded-full bg-black/35 p-1 backdrop-blur-md">
+          <div className="w-full max-w-sm rounded-full bg-black/55 p-1">
             <div className="h-3 overflow-hidden rounded-full bg-white/15">
               <motion.div
                 className="h-full rounded-full"
@@ -270,7 +270,7 @@ export function MatchHud({
       {/* multiplicador da coroa */}
       {gameId === 'crown' && hud.crownMultiplier > 1.05 ? (
         <div className="absolute inset-x-0 top-[76px] flex justify-center px-4 sm:top-[86px]">
-          <p className="rounded-2xl bg-lemon-400/90 px-3 py-1 font-display text-sm font-extrabold text-[#6B3D00] backdrop-blur-md">
+          <p className="rounded-2xl bg-lemon-400/90 px-3 py-1 font-display text-sm font-extrabold text-[#6B3D00]">
             coroa x{hud.crownMultiplier.toFixed(1)}
           </p>
         </div>
@@ -284,8 +284,8 @@ export function MatchHud({
               key={player.id}
               layout
               className={cn(
-                'flex min-w-[86px] items-center gap-2 rounded-2xl px-2 py-1.5 backdrop-blur-md transition-opacity sm:min-w-[112px]',
-                player.alive ? 'bg-black/38' : 'bg-black/22 opacity-60',
+                'flex min-w-[86px] items-center gap-2 rounded-2xl px-2 py-1.5 transition-opacity sm:min-w-[112px]',
+                player.alive ? 'bg-black/58' : 'bg-black/42 opacity-60',
                 player.isSelf && 'ring-2 ring-white/70',
               )}
             >
